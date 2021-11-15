@@ -13,6 +13,8 @@ const sequelize = new Sequelize(CONNECTION_STRING, {
     },
 });
 
+let newCity = 1
+
 module.exports = {
     seed: (req, res) => {
         sequelize.query(`
@@ -239,4 +241,25 @@ module.exports = {
         .then(dbRes => res.status(200).send(dbRes[0]))
         .catch(err => console.log(err))
     },
+    getCities(rew,res) {
+        sequelize.query(`
+            SELECT city.cities, country.countries from countries country,
+            JOIN countries country ON country.city_id = city.city_id
+        `)
+        .then(dbRes => res.status(200).send(dbRes[0]))
+        .catch(err => console.log(err))
+    },
+    createCity(req,res) {
+        let {country_id}= req.body
+        sequelize.query(`
+            INSERT into cities (name, rating, country_id)
+            VALUES (${newCity}, ${country_id}),
+            (${newCity + 1}, ${country_id});
+        `)
+        .then(dbRes => {
+            res.status(200).send(dbRes[0])
+            newCity += 2
+        })
+        .catch(err => console.log(err))
+    }
 }
